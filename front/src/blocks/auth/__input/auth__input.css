@@ -1,0 +1,15 @@
+.auth__input {
+  background-color: #000;
+  color: #fff;
+  border-bottom: 2px solid #ccc;
+}
+
+.auth__input[type="text"]:focus {
+  background-color: #000;
+}
+
+@media screen and (max-width: 540px) {
+  .auth__input {
+    max-width: 260px;
+  }
+}

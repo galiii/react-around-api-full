@@ -1,0 +1,28 @@
+.header {
+  /*max-width: 320px;*/
+  width: 100%;
+  border-bottom: 1px solid rgba(84, 84, 84, 0.7);
+  margin: 0 0 38px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.header__status {
+  color: white;
+  display: flex;
+  line-height: 22px;
+  font-size: 18px;
+  margin: 6px 0 46px;
+}
+
+@media screen and (max-width: 540px) {
+  .header {
+    margin-bottom: 36px;
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+  .header__status {
+    align-items: center;
+    flex-direction: column;
+  }
+}

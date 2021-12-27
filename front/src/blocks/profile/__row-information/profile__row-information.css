@@ -1,0 +1,13 @@
+.profile__row-information {
+  /*border: 1px solid red;*/
+  display: flex;
+  /*justify-content: space-between;*/
+  align-items: center;
+  margin: 0 0 16px;
+}
+
+@media screen and (max-width: 540px) {
+  .profile__row-information {
+    margin-bottom: 14px;
+  }
+}

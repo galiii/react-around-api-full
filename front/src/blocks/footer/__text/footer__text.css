@@ -1,0 +1,21 @@
+.footer__text {
+  margin: 0;
+  padding: 0;
+  font-size: 18px;
+  line-height: 22px;
+  max-width: 318px;
+}
+/* copyright sign */
+.footer__text::before {
+  content:'  \00a9';
+ }
+
+
+ @media screen and (max-width: 540px) {
+  .footer__text {
+    max-width: 100%;
+    font-size: 14px;
+    line-height: 17px;
+
+  }
+}

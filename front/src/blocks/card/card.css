@@ -1,0 +1,17 @@
+.card {
+  overflow: hidden;
+  background-color: #fff;
+  /*border: 1px solid green;*/
+  border-radius: 10px;
+  width: 282px;
+  color: #000;
+  margin: 0 auto;
+  /*max-height: 361px;*/
+  height: 361px;
+  position: relative;
+}
+
+
+
+
+

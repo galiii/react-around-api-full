@@ -1,0 +1,26 @@
+.profile__image {
+  object-fit: cover;
+  object-position: 50% 50%;
+  overflow: hidden;
+  max-width: 120px;
+  border-radius: 50%;
+  height: 120px;
+  /*height: 127px;*/
+  /*object-fit: cover;*/
+  /*background-size: 50% 50%;*/
+  /*background-repeat: no-repeat;*/
+  /*border: 1px solid white;*/
+  margin: 0 18px 0 0;
+  /*border-radius: 50%;*/
+}
+
+.profile__image:hover {
+  cursor: pointer;
+  opacity: .8;
+}
+
+@media screen and (max-width: 540px) {
+  .profile__image {
+    margin: 0 0 26px;
+  }
+}

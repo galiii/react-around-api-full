@@ -1,0 +1,7 @@
+.card__row {
+  margin-left: 21px;
+  margin-right: 18px;
+  display: flex;
+  justify-content: space-between;/*space-around;*/
+}
+

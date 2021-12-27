@@ -1,0 +1,5 @@
+.card__like_active {
+  background-image: url(../../../../images/logos/black-like.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+}
