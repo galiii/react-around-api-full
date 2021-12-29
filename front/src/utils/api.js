@@ -8,27 +8,34 @@ class Api {
   }
 
   // Loading User Information from the Server
-  getUserInfo = () => {
+  getUserInfo = (token) => {
     return customFetch(`${this._baseUrl}/users/me`, {
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     });
   };
 
   // Loading Cards from the Server
-  getInitialCards = () => {
+  getInitialCards = (token) => {
     return customFetch(`${this._baseUrl}/cards`, {
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     });
   };
 
   // Adding a New Card
-  addCard = ({ name, link }) => {
+  addCard = ({ name, link }, token) => {
     return customFetch(`${this._baseUrl}/cards`, {
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       method: "POST",
       body: JSON.stringify({
-        /*name: data["card-title"],
-        link: data["card-link"],*/
         name,
         link,
       }),
@@ -36,41 +43,56 @@ class Api {
   };
 
   // Deleting a Card
-  deleteCard = (cardId) => {
+  deleteCard = (cardId, token) => {
     console.log("api", cardId);
     return customFetch(`${this._baseUrl}/cards/${cardId}`, {
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       method: "DELETE",
     });
   };
 
   // Adding  Likes
-  likeCard = (cardId) => {
+  likeCard = (cardId, token) => {
     return customFetch(`${this._baseUrl}/cards/likes/${cardId}`, {
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       method: "PUT",
     });
   };
 
   // Removing Likes
-  dislikeCard = (cardId) => {
+  dislikeCard = (cardId, token) => {
     return customFetch(`${this._baseUrl}/cards/likes/${cardId}`, {
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       method: "DELETE",
     });
   };
 
-  changeLikeCardStatus = (cardId, isLiked) => {
+  changeLikeCardStatus = (cardId, isLiked, token) => {
     return customFetch(`${this._baseUrl}/cards/likes/${cardId}`, {
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       method: `${isLiked ? "PUT" : "DELETE"}`,
     });
   };
 
   // Editing the Profile
-  editProfileUserInfo = ({ name, about }) => {
+  editProfileUserInfo = ({ name, about }, token) => {
     return customFetch(`${this._baseUrl}/users/me`, {
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       method: "PATCH",
       body: JSON.stringify({
         name,
@@ -80,9 +102,12 @@ class Api {
   };
 
   // Updating Profile Picture
-  updateUserImage = (avatar) => {
+  updateUserImage = (avatar, token) => {
     return customFetch(`${this._baseUrl}/users/me/avatar`, {
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       method: "PATCH",
       body: JSON.stringify(avatar),
     });
@@ -90,11 +115,12 @@ class Api {
 }
 
 const api = new Api({
-  baseUrl: "https://around.nomoreparties.co/v1/group-12",
-  headers: {
+  //baseUrl: "https://around.nomoreparties.co/v1/group-12",
+  baseUrl: "http://localhost:3000",
+  /*headers: {
     authorization: "9bc9c0f1-5a8a-40aa-b985-20e7b24d1389",
     "Content-Type": "application/json",
-  },
+  },*/
 });
 
 export default api;

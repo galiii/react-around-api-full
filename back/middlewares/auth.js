@@ -1,35 +1,32 @@
+const jwt = require('jsonwebtoken');
+
 module.exports = (req, res, next) => {
-
-  // get authorization from the header by destructuring
-  const { authorization } = req.headers;
-
-  // check that the header exists and starts with 'Bearer '
-  if (!authorization || !authorization.startsWith('Bearer ')) {
+  //console.log(req.headers);
+  const { authorization } = req.headers.authorization;
+  //console.log(req.headers.authorization);
+  if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
     return res
       .status(401)
       .send({ message: 'Authorization required' });
   }
 
-   // auth header exists and is in correct format
-   // so extract the token from the header
-   const token = authorization.replace('Bearer ', '');
-
-   // if token is verified, save the payload
+   
+   const token = req.headers.authorization.replace('Bearer ', '');
+//console.log("token", token)
+   
    let payload;
    try {
      payload = jwt.verify(token, 'not-very-secret-key');
+     console.log("payload",payload);
    } catch (err) {
-     // otherwise, return an error
+     
      return res
       .status(401)
       .send({ message: 'Authorization required' });
    }
 
-   /* Save payload to request. This makes the payload available
-   to the latter parts of the route. See the `Accessing user
-   data with req.user` example for details. */
-   req.user = payload;
-
-   // sending the request to the next middleware
+   
+   req.user = payload._id;
+   console.log(`in auth ${req.user}`);
    next();
 };

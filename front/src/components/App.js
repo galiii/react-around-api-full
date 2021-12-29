@@ -1,4 +1,5 @@
 import React from "react";
+import {useState, useEffect} from "react";
 import { Route, Switch, Redirect, useHistory } from "react-router-dom";
 
 import Header from "./Header";
@@ -23,65 +24,47 @@ import { SUCCESS, FAILURE } from "../utils/constants.js";
 import "../index.css";
 
 function App() {
-  // States for auth
-  const [isSuccessful, setIsSuccessful] = React.useState(false);
-  // Message for error or Successful
-  const [message, setMessage] = React.useState("");
-  // If the User isLoggedIn true or false
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-  // Is InfoTooltip is Open popup true or false
-  const [isInfoTooltipOpen, setIsInfoTooltipOpen] = React.useState(false);
-
-  /* States when you ready Login */
-  // Is EditProfilePopup is Open true or false
-  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] =
-    React.useState(false);
-  // Is AddPlacePopup is Open true or false
-  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
-  // Is EditAvatarPopup is Open true or false
-  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] =
-    React.useState(false);
-  // Is ImagePopup is Open true or false
-  const [isImagePopupOpen, setIsImagePopupOpen] = React.useState(false);
-
-  // Selected card
-  const [selectedCard, setSelectedCard] = React.useState({
+  
+  const [isSuccessful, setIsSuccessful] =useState(false);
+  const [message, setMessage] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
+  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
+  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
+  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
+  const [isImagePopupOpen, setIsImagePopupOpen] = useState(false);
+  const [selectedCard, setSelectedCard] = useState({
     name: "",
     link: "",
   });
-  const [cards, setCards] = React.useState([]);
-  const [currentUser, setCurrentUser] = React.useState({});
-  const [userEmail, setUserEmail] = React.useState("");
+  const [cards, setCards] = useState([]);
+  const [currentUser, setCurrentUser] = useState({});
+  const [userEmail, setUserEmail] = useState("");
+  const [token, setToken] = useState(localStorage.getItem('jwt'));
   const history = useHistory();
 
-  /*  Authentication   */
+
 
   const tokenCheck = () => {
-    // if the user has a token in localStorage,
-    // this function will check that the user has a valid token
-    const jwt = localStorage.getItem("token");
-    console.log("jwt", jwt);
-    if (jwt) {
-      // we'll verify the token
+    //console.log("jwt", token);
+    if (token) {
       auth
-        .getContent(jwt)
+        .getContent(token)
         .then((res) => {
           console.log("Res", res);
           if (res) {
-            // we can get the user data here!
             console.log("emails", res.data.email);
             setUserEmail(res.data.email);
             setIsLoggedIn(true);
-            //setIsSuccessful(true);
             history.push("/");
           }
         })
         .catch((err) => {
-          if (err === "Error: Bad Request") {
+          if (err === "Bad Request") {
             console.error(
               "400 — Token not provided or provided in the wrong format"
             );
-          } else if (err === "Error: Unauthorized") {
+          } else if (err === "Unauthorized") {
             console.error("401 — The provided token is invalid ");
           } else {
             console.error(err);
@@ -95,7 +78,6 @@ function App() {
   const handleSignUp = ({ email, password }) => {
     auth
       .register({ email, password })
-      //.then(data => console.log(data))
       .then((data) => {
         console.log(data);
         setIsSuccessful(true);
@@ -103,7 +85,7 @@ function App() {
         history.push("/signin");
       })
       .catch((err) => {
-        if (err === "Error: Bad Request") {
+        if (err === "Bad Request") {
           console.error("400 - one of the fields was filled in incorrectly");
         } else {
           console.error("err", err);
@@ -120,23 +102,29 @@ function App() {
       .login({ email, password })
       .then((res) => {
         if (res.token) {
+          /*setToken(res.token);
           setIsLoggedIn(true);
           console.log("in login", res);
           setIsSuccessful(true);
-          setMessage(SUCCESS);
-          console.log("login app email", email);
+          setMessage(SUCCESS);*/
+           // setEmail(email);
+        setToken(res.token);
+        setIsLoggedIn(true);
+        setIsSuccessful(true);
+        history.push('/');
+          //console.log("login app email", email);
         } else {
           setIsSuccessful(false);
           setMessage(FAILURE);
         }
-        console.log("login before token");
-        tokenCheck();
+       // console.log("login before token");
+        //tokenCheck();
       })
       .catch((err, status) => {
         console.log(err);
-        if (err === "Error: Bad Request") {
+        if (err === "Bad Request") {
           console.error("400 - one or more of the fields were not provided");
-        } else if (err === "Error: Unauthorized") {
+        } else if (err === "Unauthorized") {
           console.error("401 - the user with the specified email not found ");
         } else {
           console.error("err", err);
@@ -148,32 +136,18 @@ function App() {
   };
 
   const handleSignOut = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("jwt");
     setIsLoggedIn(false);
     setUserEmail("");
     history.push("/signin");
   };
 
-  React.useEffect(() => {
-    tokenCheck();
-  }, [history]);
 
-  /* Get User Information && Card List from the api */
-  React.useEffect(() => {
-    Promise.all([api.getUserInfo(), api.getInitialCards()])
-      .then(([userData, cardData]) => {
-        setCurrentUser({ ...userData });
-        setCards([...cardData]);
-      })
-      .catch(console.error);
-  }, []);
-
-  /* Click handlers */
   const handleEditAvatarClick = () => setIsEditAvatarPopupOpen(true);
   const handleEditProfileClick = () => setIsEditProfilePopupOpen(true);
   const handleAddPlaceClick = () => setIsAddPlacePopupOpen(true);
 
-  /* Handle popup current card click */
+  
   const handleCardClick = (card) => {
     setSelectedCard({
       name: card.name,
@@ -182,10 +156,10 @@ function App() {
     setIsImagePopupOpen(true);
   };
 
-  /* Like && DisLike Card handler */
+ 
   const handleCardLike = (card) => {
-    const isLiked = card.likes.some((i) => i._id === currentUser._id); //Check one more time if this card was already liked
-    api //Send a request to the API and getting the updated card data
+    const isLiked = card.likes.some((i) => i._id === currentUser._id); 
+    api 
       .changeLikeCardStatus(card._id, !isLiked)
       .then((newCard) => {
         setCards((state) =>
@@ -195,7 +169,6 @@ function App() {
       .catch(console.error);
   };
 
-  /* Delete Card handler */
   const handleCardDelete = (card) => {
     api
       .deleteCard(card._id)
@@ -207,7 +180,6 @@ function App() {
       .catch(console.error);
   };
 
-  /* Edit profile User handler */
   const handleUpdateUser = (user) => {
     api
       .editProfileUserInfo(user)
@@ -220,7 +192,6 @@ function App() {
       .catch(console.error);
   };
 
-  /* Update profile image */
   const handleUpdateAvatar = (link) => {
     api
       .updateUserImage(link)
@@ -233,12 +204,11 @@ function App() {
       .catch(console.error);
   };
 
-  /* Add new Card handler */
+  
   const handleAddPlaceSubmit = (data) => {
     api
       .addCard(data)
       .then((res) => {
-        //likes [] , _id, name, link, owner
         console.log("add res", res);
         setCards([res, ...cards]);
         setIsAddPlacePopupOpen(false);
@@ -248,14 +218,30 @@ function App() {
 
   const closeAllPopups = () => {
     setIsInfoTooltipOpen(false);
-
     setIsEditAvatarPopupOpen(false);
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setIsImagePopupOpen(false);
   };
 
-  React.useEffect(() => {
+
+  useEffect(() => {
+    console.log("line 225");
+    tokenCheck();
+  }, [token, history]);
+
+ 
+  useEffect(() => {
+    //console.log(`line 231 ${token}`);
+    Promise.resolve(api.getUserInfo(token))
+      .then((userData) => {
+        setCurrentUser({ ...userData });
+        //setCards([...cardData]);
+      })
+      .catch(console.error);
+  }, [token]);
+
+  useEffect(() => {
     const closeByEscape = (e) => {
       if (e.key === "Escape") {
         closeAllPopups();
@@ -263,7 +249,7 @@ function App() {
     };
     document.addEventListener("keydown", closeByEscape);
     return () => document.removeEventListener("keydown", closeByEscape);
-  }, []);
+  }, [closeAllPopups]);
 
   return (
     <div className="page__container">
@@ -299,8 +285,6 @@ function App() {
           </ProtectedRoute>
           <Route>
             {
-              //if the user isLoggedIn send him to the Main page
-              //else send him to the login/signin page
               isLoggedIn ? <Redirect to="/" /> : <Redirect to="/signin" />
             }
           </Route>

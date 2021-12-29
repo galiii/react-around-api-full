@@ -20,10 +20,46 @@ const getUsers = (req, res) => {
     });
 };
 
+
+const getUserById = (req, res, next) => { 
+  console.dir("userId 52",req.user);
+  const userId  = req.user;
+  
+  User.findById(userId)
+    /*.orFail(() => {
+      console.error("on fail getUserById");
+      const error = new Error("No userfgfgfgfgfgfg found with that id");
+      error.statusCode = 404;
+      error.name = "DocumentNotFoundError";
+      throw error;
+    })*/
+    .then((userData) => {
+      console.log("userData line 62", userData);
+      res.status(200).send({ data: userData });
+  })
+  //.catch(next);
+    .catch((err) => {
+      console.error(err);
+      if (err.statusCode === 404) {
+        res.status(404).send({ message: err.message });
+      } else if (err.name === "CastError") {
+        res
+          .status(400)
+          .send({ message: "Invalid data passed to the Get User" });
+      } else {
+        res
+          .status(500)
+          .send({ message: err.message || "An error has occurred" });
+      }
+    });
+};
+
 const getUser = (req, res) => {
+  console.log("checkingggggg");
   const { userId } = req.params;
   User.findById(userId)
     .orFail(() => {
+      console.log("hello hello");
       const error = new Error("No user found with that id");
       error.statusCode = 404;
       error.name = "DocumentNotFoundError";
@@ -45,38 +81,30 @@ const getUser = (req, res) => {
     });
 };
 
-const getUserById = (req, res, next) => {
-  console.log("req", req);
-  User.findById(req.user._id)
-  .orFail(() => {
-    throw new  NotFoundError("DocumentNotFoundError  No user found with that id")
-  })
-  .then((userData) => res.status(200).send({ data: userData }))
-  .catch(next);
-}
+
 
 const login = (req, res) => {
   const { email, password } = req.body;
-  console.log(`here the email ${email}`);
+  console.log(`here the email login 84 ${email}`);
   // search database for user with the given email
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      // create a token
-      const token = jwt.sign({ _id: user._id }, "not-so-secret-string", {
+      console.log(`user line 88 ${user._id}`);
+      const token = jwt.sign({ _id: user._id }, "not-very-secret-key", {
         expiresIn: "7d",
       });
-      console.log("this token", token);
+      //console.log("this token controllers line 92:::", token);
       res.send({ token });
     })
     .catch((err) => {
-      console.log(`here errorrr ${err.message}`);
+      //console.log(`here errorrr ${err.message}`);
       res.status(401).send({ message: err.message });
     });
 };
 
 const createUser = (req, res) => {
   const { email, password, name, about, avatar } = req.body;
-
+ console.log(`${req}`);
   bcrypt
     .hash(password, 10)
     .then((hash) =>
@@ -155,7 +183,6 @@ const updateProfile = (req, res) => {
 
 const updateAvatar = (req, res) => {
   const { _id, avatar } = req.body;
-
   User.findByIdAndUpdate(_id, { avatar }, { new: true, runValidators: true })
     .orFail(() => {
       const error = new Error("No User found with that id to update Avatar");

@@ -3,6 +3,7 @@ const validator = require("validator");
 const bcrypt = require("bcryptjs");
 
 const { regexURL } = require("../utils/utils");
+const UnauthorizedError = require("../errors/unauthorized-error");
 
 const userSchema = new mongoose.Schema(
   {
@@ -13,12 +14,13 @@ const userSchema = new mongoose.Schema(
         validator: (v) => validator.isEmail(v),
         message: "Wrong email format",
       },
-      //unique: true,
+      unique: true,
     },
     password: {
       type: String,
       required: true,
       minlength: 8,
+      select: false // add the select field
     },
     name: {
       type: String, // the name is a string
@@ -51,25 +53,27 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// we're adding the findUserByCredentials methods to the User schema
-// it will have two parameters, email and password
 
-userSchema.statics.findUserByCredentials = function findUserByCredentials (email, password) {
+
+userSchema.statics.findUserByCredentials = function findUserByCredentials(
+  email,
+  password
+) {
   return this.findOne({ email })
+  .select('+password')
   .then((user) => {
     if (!user) {
-      return Promise.reject(new Error('Incorrect email or password'));
+      throw new UnauthorizedError("Incorrect email or password 66");
     }
-console.log(`User ${user.password}`);
-console.log(`this ${password}`);
-    return bcrypt.compare(password, user.password)
-      .then((matched) => {
-        if (!matched) {
-          return Promise.reject(new Error('Incorrect email or password'));
-        }
-console.log("1234567",user);
-        return user; // now user is available
-      });
+    //console.log(`User ${user.password}`);
+    //console.log(`this ${password}`);
+    return bcrypt.compare(password, user.password).then((matched) => {
+      if (!matched) {
+        throw new UnauthorizedError("Incorrect email or password 71");
+      }
+      console.log( user);
+      return user; // now user is available
+    });
   });
 };
 

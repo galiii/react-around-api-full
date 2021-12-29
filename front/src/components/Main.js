@@ -12,15 +12,15 @@ function Main({
   onCardDelete,
 }) {
   const currentUser = React.useContext(CurrentUserContext);
-
+  console.log("current user", currentUser);
   return (
     <main className="content">
       {/* Profile */}
       <section className="profile">
         <div className="profile__image-container">
           <img
-            src={currentUser["avatar"]}
-            alt={currentUser["name"]}
+            src={currentUser.data["avatar"]}
+            alt={currentUser.data["name"]}
             className="profile__image"
           />
 
@@ -32,7 +32,7 @@ function Main({
 
         <div className="profile__section-information">
           <div className="profile__row-information">
-            <h1 className="profile__name">{currentUser["name"]}</h1>
+            <h1 className="profile__name">{currentUser.data["name"]}</h1>
             <button
               type="button"
               aria-label="Edit"
@@ -40,7 +40,7 @@ function Main({
               onClick={onEditProfileClick}
             ></button>
           </div>
-          <p className="profile__job"> {currentUser["about"]}</p>
+          <p className="profile__job"> {currentUser.data["about"]}</p>
         </div>
         <button
           type="button"
