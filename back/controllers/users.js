@@ -22,40 +22,18 @@ const getUsers = (req, res) => {
 
 
 const getUserById = (req, res, next) => { 
-  console.dir("userId 52",req.user);
+  //console.dir("userId 52",req.user);
   const userId  = req.user;
-  
   User.findById(userId)
-    /*.orFail(() => {
-      console.error("on fail getUserById");
-      const error = new Error("No userfgfgfgfgfgfg found with that id");
-      error.statusCode = 404;
-      error.name = "DocumentNotFoundError";
-      throw error;
-    })*/
-    .then((userData) => {
-      console.log("userData line 62", userData);
-      res.status(200).send({ data: userData });
+    .then((data) => {
+      //console.log("userData line 62", data);
+      res.status(200).send({ data:data });
   })
-  //.catch(next);
-    .catch((err) => {
-      console.error(err);
-      if (err.statusCode === 404) {
-        res.status(404).send({ message: err.message });
-      } else if (err.name === "CastError") {
-        res
-          .status(400)
-          .send({ message: "Invalid data passed to the Get User" });
-      } else {
-        res
-          .status(500)
-          .send({ message: err.message || "An error has occurred" });
-      }
-    });
+  .catch(next);
 };
 
 const getUser = (req, res) => {
-  console.log("checkingggggg");
+  //console.log("checkingggggg");
   const { userId } = req.params;
   User.findById(userId)
     .orFail(() => {
@@ -81,15 +59,13 @@ const getUser = (req, res) => {
     });
 };
 
-
-
 const login = (req, res) => {
   const { email, password } = req.body;
-  console.log(`here the email login 84 ${email}`);
+  //console.log(`here the email login 84 ${email}`);
   // search database for user with the given email
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      console.log(`user line 88 ${user._id}`);
+      //console.log(`user line 88 ${user._id}`);
       const token = jwt.sign({ _id: user._id }, "not-very-secret-key", {
         expiresIn: "7d",
       });
@@ -104,7 +80,7 @@ const login = (req, res) => {
 
 const createUser = (req, res) => {
   const { email, password, name, about, avatar } = req.body;
- console.log(`${req}`);
+ //console.log(`${req}`);
   bcrypt
     .hash(password, 10)
     .then((hash) =>
@@ -149,24 +125,29 @@ runValidators: if true, runs update validators on this command. Update validator
 the update operation against the model's schema.
 */
 
-const updateProfile = (req, res) => {
-  const { _id, name, about } = req.body;
-
+const updateProfile = (req, res, next) => {
+  const {  name, about } = req.body;
+  const _id = req.user;
+//console.log("ID",_id);
   User.findByIdAndUpdate(
     _id,
     { name, about },
     { new: true, runValidators: true }
   )
-    .orFail(() => {
+    /*.orFail(() => {
+      console.log("hello line 141");
       const error = new Error("No User found with that id to update profile");
       error.statusCode = NOT_FOUND;
       error.name = "DocumentNotFoundError";
       throw error;
-    })
+    })*/
     .then((userData) => {
-      res.status(OK).send({ data: userData });
+      
+      res.status(OK).send({  data: userData });
     })
-    .catch((err) => {
+    .catch(next);
+    /*.catch((err) => {
+      console.log("line 152");
       if (err.statusCode === NOT_FOUND) {
         res.status(NOT_FOUND).send({ message: err.message });
       } else if (err.name === "ValidationError") {
@@ -178,11 +159,13 @@ const updateProfile = (req, res) => {
           .status(DEFAULT_ERROR)
           .send({ message: err.message || "An error has occurred" });
       }
-    });
+    });*/
 };
 
 const updateAvatar = (req, res) => {
-  const { _id, avatar } = req.body;
+  const { avatar } = req.body;
+  const _id = req.user;
+  //console.log(req.user);
   User.findByIdAndUpdate(_id, { avatar }, { new: true, runValidators: true })
     .orFail(() => {
       const error = new Error("No User found with that id to update Avatar");

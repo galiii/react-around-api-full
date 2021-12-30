@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       validate: {
         validator(url) {
-          return regexURL.test(url);
+          return validator.isURL(url);
         },
         message: "Sorry. Wrong URL", // when the validator returns false, this message will be displayed
       },

@@ -17,7 +17,7 @@ const cardSchema = new mongoose.Schema(
           //
           return regexURL.test(v);
         },
-        message: "Sorry. Wrong URL", // when the validator returns false, this message will be displayed
+        message: "Sorry. Wrong URL",
       },
     },
     owner: {
@@ -30,14 +30,13 @@ const cardSchema = new mongoose.Schema(
       default: [],
     },
     createdAt: {
-      type: Date, // the createdAt is a Date
+      type: Date,
       default: Date.now,
     },
   },
   {
     versionKey: false, // set to false then it wont create in mongodb
-  },
+  }
 );
 
-// create the model and export it
 module.exports = mongoose.model("card", cardSchema);

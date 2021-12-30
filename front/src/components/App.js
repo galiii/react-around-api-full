@@ -1,5 +1,5 @@
 import React from "react";
-import {useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import { Route, Switch, Redirect, useHistory } from "react-router-dom";
 
 import Header from "./Header";
@@ -24,8 +24,7 @@ import { SUCCESS, FAILURE } from "../utils/constants.js";
 import "../index.css";
 
 function App() {
-  
-  const [isSuccessful, setIsSuccessful] =useState(false);
+  const [isSuccessful, setIsSuccessful] = useState(false);
   const [message, setMessage] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
@@ -40,10 +39,8 @@ function App() {
   const [cards, setCards] = useState([]);
   const [currentUser, setCurrentUser] = useState({});
   const [userEmail, setUserEmail] = useState("");
-  const [token, setToken] = useState(localStorage.getItem('jwt'));
+  const [token, setToken] = useState(localStorage.getItem("jwt"));
   const history = useHistory();
-
-
 
   const tokenCheck = () => {
     //console.log("jwt", token);
@@ -51,10 +48,14 @@ function App() {
       auth
         .getContent(token)
         .then((res) => {
-          console.log("Res", res);
+          //console.log("Res", res);
           if (res) {
-            console.log("emails", res.data.email);
+            //console.log("emails", res.data.email);
             setUserEmail(res.data.email);
+            /*setCurrentUser({
+              avatar: res.data.avatar,
+              name: res.data.name
+            })*/
             setIsLoggedIn(true);
             history.push("/");
           }
@@ -107,17 +108,17 @@ function App() {
           console.log("in login", res);
           setIsSuccessful(true);
           setMessage(SUCCESS);*/
-           // setEmail(email);
-        setToken(res.token);
-        setIsLoggedIn(true);
-        setIsSuccessful(true);
-        history.push('/');
+          // setEmail(email);
+          setToken(res.token);
+          setIsLoggedIn(true);
+          setIsSuccessful(true);
+          history.push("/");
           //console.log("login app email", email);
         } else {
           setIsSuccessful(false);
           setMessage(FAILURE);
         }
-       // console.log("login before token");
+        // console.log("login before token");
         //tokenCheck();
       })
       .catch((err, status) => {
@@ -142,12 +143,10 @@ function App() {
     history.push("/signin");
   };
 
-
   const handleEditAvatarClick = () => setIsEditAvatarPopupOpen(true);
   const handleEditProfileClick = () => setIsEditProfilePopupOpen(true);
   const handleAddPlaceClick = () => setIsAddPlacePopupOpen(true);
 
-  
   const handleCardClick = (card) => {
     setSelectedCard({
       name: card.name,
@@ -156,14 +155,17 @@ function App() {
     setIsImagePopupOpen(true);
   };
 
- 
   const handleCardLike = (card) => {
-    const isLiked = card.likes.some((i) => i._id === currentUser._id); 
-    api 
-      .changeLikeCardStatus(card._id, !isLiked)
+    //console.log("card",card);
+    const isLiked = card.likes.some((i) => i === currentUser._id);
+    //console.log("Array Cards", card.likes);
+    console.log("isLiked in APP", isLiked);
+    api
+      .changeLikeCardStatus(card._id, !isLiked, token)
       .then((newCard) => {
+        console.log("In App Card Like:: ", newCard.data);
         setCards((state) =>
-          state.map((c) => (c._id === card._id ? newCard : c))
+          state.map((c) => (c._id === card._id ? newCard.data : c))
         );
       })
       .catch(console.error);
@@ -171,21 +173,20 @@ function App() {
 
   const handleCardDelete = (card) => {
     api
-      .deleteCard(card._id)
+      .deleteCard(card._id, token)
       .then((res) => {
-        setCards(
-          (state) => state.filter((c) => c._id !== card._id) //Create array of cards that aren't delete
-        );
+        setCards((state) => state.filter((c) => c._id !== card._id));
       })
       .catch(console.error);
   };
 
   const handleUpdateUser = (user) => {
+    console.log("user", user);
     api
-      .editProfileUserInfo(user)
+      .editProfileUserInfo(user, token)
       .then((res) => {
         setCurrentUser({
-          ...res,
+          ...res.data,
         });
         setIsEditProfilePopupOpen(false);
       })
@@ -193,24 +194,24 @@ function App() {
   };
 
   const handleUpdateAvatar = (link) => {
+    console.log("link", link);
     api
-      .updateUserImage(link)
+      .updateUserImage(link, token)
       .then((res) => {
         setCurrentUser({
-          ...res,
+          ...res.data,
         });
         setIsEditAvatarPopupOpen(false);
       })
       .catch(console.error);
   };
 
-  
   const handleAddPlaceSubmit = (data) => {
     api
-      .addCard(data)
+      .addCard(data, token)
       .then((res) => {
-        console.log("add res", res);
-        setCards([res, ...cards]);
+        console.log("add res", res.data);
+        setCards([res.data, ...cards]);
         setIsAddPlacePopupOpen(false);
       })
       .catch(console.error);
@@ -224,19 +225,18 @@ function App() {
     setIsImagePopupOpen(false);
   };
 
-
   useEffect(() => {
-    console.log("line 225");
+    // console.log("line 225");
     tokenCheck();
   }, [token, history]);
 
- 
   useEffect(() => {
     //console.log(`line 231 ${token}`);
-    Promise.resolve(api.getUserInfo(token))
-      .then((userData) => {
-        setCurrentUser({ ...userData });
-        //setCards([...cardData]);
+    Promise.all([api.getUserInfo(token), api.getInitialCards(token)])
+      .then(([userData, cardsData]) => {
+        //console.log("Cards app",cardsData);
+        setCurrentUser({ ...userData.data });
+        setCards([...cardsData.data]);
       })
       .catch(console.error);
   }, [token]);
@@ -253,7 +253,6 @@ function App() {
 
   return (
     <div className="page__container">
-      {/* embedding data from the currentUser using the  context provider  */}
       <CurrentUserContext.Provider value={currentUser}>
         <Switch>
           <Route path="/signup">
@@ -284,9 +283,7 @@ function App() {
             />
           </ProtectedRoute>
           <Route>
-            {
-              isLoggedIn ? <Redirect to="/" /> : <Redirect to="/signin" />
-            }
+            {isLoggedIn ? <Redirect to="/" /> : <Redirect to="/signin" />}
           </Route>
         </Switch>
 

@@ -7,9 +7,10 @@ const {
 } = require("../utils/utils");
 
 const getCards = (req, res) => {
+  //console.log("Gets cards", req);
   Card.find({})
-    .populate("owner")
-    .then((cards) => res.status(OK).send({ data: cards }))
+    //.populate("owner")
+    .then((cards) => res.status(200).send({ data: cards }))
     .catch((err) => {
       res
         .status(DEFAULT_ERROR)
@@ -19,8 +20,8 @@ const getCards = (req, res) => {
 
 const createCard = (req, res) => {
   const { name, link } = req.body;
-
-  Card.create({ name, link, owner: req.user._id })
+console.log("line 22 cards",req.user );
+  Card.create({ name, link, owner: req.user })
     .then((cardData) => res.status(OK).send({ data: cardData }))
     .catch((err) => {
       if (err.name === "ValidationError") {
@@ -64,15 +65,15 @@ const deleteCard = (req, res) => {
 
 const likeCard = (req, res) => {
   const { cardId } = req.params;
-
-  Card.findByIdAndUpdate(cardId, { $addToSet: { likes: req.user._id } }, { new: true })
+console.log("like 67",req.user);
+  Card.findByIdAndUpdate(cardId, { $addToSet: { likes: req.user } }, { new: true })
     .orFail(() => {
       const error = new Error("No card found with that id LikeCard");
       error.statusCode = NOT_FOUND;
       error.name = "DocumentNotFoundError";
       throw error;
     })
-    .then((cardData) => res.status(OK).send({ data: cardData }))
+    .then((cardData) => {res.status(200).send({ data: cardData })})
     .catch((err) => {
       if (err.statusCode === NOT_FOUND) {
         res.status(NOT_FOUND).send({ message: err.message });
@@ -91,7 +92,7 @@ const likeCard = (req, res) => {
 const dislikeCard = (req, res) => {
   const { cardId } = req.params;
 
-  Card.findByIdAndUpdate(cardId, { $pull: { likes: req.user._id } }, { new: true })
+  Card.findByIdAndUpdate(cardId, { $pull: { likes: req.user } }, { new: true })
     .orFail(() => {
       const error = new Error("No card found with that id DisLike");
       error.statusCode = NOT_FOUND;

@@ -3,21 +3,19 @@ import { CurrentUserContext } from "../contexts/CurrentUserContext";
 
 function Card({ card, onCardClick, onCardLike, onCardDelete }) {
   const currentUser = React.useContext(CurrentUserContext);
+  //console.log("currentUser", currentUser);
+  //console.log("Cards ", card);
+  const { _id } = currentUser;
+ // card.owner = "61cc51817878b7c3e3c117a4";
+  const isOwn = card.owner === _id;
 
-  //likes [] _id name link owner: { name about avatar _id cohort }
+  const isLiked = card.likes.some((i) => i === currentUser._id);
+  console.log(`the isLiked is ${isLiked}`);
 
-  //For delete button
-  const isOwn = card.owner._id === currentUser._id; //Checking if the current user is the owner of the current card
-
-  // Creating a variable which you'll then set in `className` for the delete button
   const cardDeleteButtonClassName = `card__delete ${
     isOwn ? "card__delete_visible" : "card__delete_hidden"
   }`;
 
-  // Check if the card was liked by the current user
-  const isLiked = card.likes.some((i) => i._id === currentUser._id);
-
-  // Create a variable which you then set in `className` for the like button
   const cardLikeButtonClassName = `card__like ${
     isLiked ? "card__like_active" : ""
   }`;
@@ -49,7 +47,7 @@ function Card({ card, onCardClick, onCardLike, onCardDelete }) {
             className={cardLikeButtonClassName}
             onClick={handleCardLike}
           ></button>
-          <span className="card__likes-count">{card["likes"].length}</span>
+          <span className="card__likes-count">{card.likes.length}</span>
         </div>
       </div>
     </li>

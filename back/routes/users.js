@@ -11,9 +11,10 @@ const {
 
 router.get("/", getUsers); 
 router.get("/me",getUserById);
+router.get("/:userId", getUser); 
 router.patch("/me", updateProfile); 
 router.patch("/me/avatar", updateAvatar); 
-router.get("/:userId", getUser); 
+
 
 
 module.exports = router;

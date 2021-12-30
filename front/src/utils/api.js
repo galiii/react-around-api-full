@@ -56,6 +56,7 @@ class Api {
 
   // Adding  Likes
   likeCard = (cardId, token) => {
+   
     return customFetch(`${this._baseUrl}/cards/likes/${cardId}`, {
       headers: {
         "Content-Type": "application/json",
@@ -77,7 +78,8 @@ class Api {
   };
 
   changeLikeCardStatus = (cardId, isLiked, token) => {
-    return customFetch(`${this._baseUrl}/cards/likes/${cardId}`, {
+    console.log("API ",cardId, isLiked);
+    return customFetch(`${this._baseUrl}/cards/${cardId}/likes/`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
