@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 
-const { regexURL } = require("../utils/utils");
-const UnauthorizedError = require("../errors/unauthorized-error");
+// const { regexURL } = require("../utils/utils");
+const UnAuthorizedError = require("../errors/unauthorized-error");
 
 const userSchema = new mongoose.Schema(
   {
@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       minlength: 8,
-      select: false // add the select field
+      select: false, // add the select field
     },
     name: {
       type: String, // the name is a string
@@ -50,31 +50,27 @@ const userSchema = new mongoose.Schema(
   },
   {
     versionKey: false, // set to false then it wont create in mongodb
-  }
+  },
 );
-
-
 
 userSchema.statics.findUserByCredentials = function findUserByCredentials(
   email,
-  password
+  password,
 ) {
   return this.findOne({ email })
-  .select('+password')
-  .then((user) => {
-    if (!user) {
-      throw new UnauthorizedError("Incorrect email or password 66");
-    }
-    //console.log(`User ${user.password}`);
-    //console.log(`this ${password}`);
-    return bcrypt.compare(password, user.password).then((matched) => {
-      if (!matched) {
-        throw new UnauthorizedError("Incorrect email or password 71");
+    .select("+password")
+    .then((user) => {
+      if (!user) {
+        throw new UnAuthorizedError("Incorrect email or password 66");
       }
-      console.log( user);
-      return user; // now user is available
+      return bcrypt.compare(password, user.password).then((matched) => {
+        if (!matched) {
+          throw new UnAuthorizedError("Incorrect email or password 71");
+        }
+        console.log(user);
+        return user; // now user is available
+      });
     });
-  });
 };
 
 // create the model and export it

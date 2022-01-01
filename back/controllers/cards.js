@@ -1,118 +1,88 @@
 const Card = require("../models/card"); // this file is the user controller
-const {
-  ERROR_CODE,
-  DEFAULT_ERROR,
-  NOT_FOUND,
-  OK,
-} = require("../utils/utils");
+const BadRequestError = require("../errors/bad-request-error"); // 400
+const NotFoundError = require("../errors/not-found-error"); // 404
+const ForbiddenError = require("../errors/forbidden-error");
 
-const getCards = (req, res) => {
-  //console.log("Gets cards", req);
+const getCards = (req, res, next) => {
   Card.find({})
-    //.populate("owner")
+    // .populate("owner")
     .then((cards) => res.status(200).send({ data: cards }))
-    .catch((err) => {
-      res
-        .status(DEFAULT_ERROR)
-        .send({ message: err.message || "An error has occurred" });
-    });
+    .catch(next);
 };
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link } = req.body;
-console.log("line 22 cards",req.user );
   Card.create({ name, link, owner: req.user })
-    .then((cardData) => res.status(OK).send({ data: cardData }))
+    .then((cardData) => res.status(201).send({ data: cardData }))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        res.status(ERROR_CODE).send({
-          message:
-            "Invalid data passed to the method create Card" || err.message,
-        });
-      } else {
-        res
-          .status(DEFAULT_ERROR)
-          .send({ message: err.message || "An error has occurred" });
+        throw new BadRequestError("Invalid data passed to the method create Card");
       }
-    });
-};
-
-const deleteCard = (req, res) => {
-  const { cardId } = req.params;
-
-  Card.findByIdAndRemove(cardId)
-    .orFail(() => {
-      const error = new Error("No card found with that id");
-      error.statusCode = NOT_FOUND;
-      error.name = "DocumentNotFoundError";
-      throw error; //
     })
-    .then((cardData) => res.status(OK).send({ data: cardData }))
-    .catch((err) => {
-      if (err.statusCode === NOT_FOUND) {
-        res.status(NOT_FOUND).send({ message: err.message });
-      } else if (err.name === "CastError") {
-        res
-          .status(ERROR_CODE)
-          .send({ message: "Invalid data passed to the Delete Card" });
-      } else {
-        res
-          .status(DEFAULT_ERROR)
-          .send({ message: err.message || "An error has occurred" });
-      }
-    });
+    .catch(next);
 };
 
-const likeCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-console.log("like 67",req.user);
-  Card.findByIdAndUpdate(cardId, { $addToSet: { likes: req.user } }, { new: true })
+  Card.findById(cardId)
     .orFail(() => {
-      const error = new Error("No card found with that id LikeCard");
-      error.statusCode = NOT_FOUND;
-      error.name = "DocumentNotFoundError";
-      throw error;
+      throw new NotFoundError("No card found with that id");
     })
-    .then((cardData) => {res.status(200).send({ data: cardData })})
-    .catch((err) => {
-      if (err.statusCode === NOT_FOUND) {
-        res.status(NOT_FOUND).send({ message: err.message });
-      } else if (err.name === "CastError") {
-        res
-          .status(ERROR_CODE)
-          .send({ message: "Invalid data passed to Like Card" });
-      } else {
-        res
-          .status(DEFAULT_ERROR)
-          .send({ message: err.message || "An error has occurred" });
+    .then((cardData) => {
+      console.log("the card before delete", cardData);
+      if (req.user.toString() === cardData.owner.toString()) {
+        Card.deleteOne(cardData).then((cardData) =>
+          res.status(200).send({ data: cardData })
+        );
+      } else if (req.user.toString() !== cardData.owner.toString()) {
+        throw new ForbiddenError("This user Isn’t the Owner of this card");
       }
-    });
+    })
+    .catch(next);
 };
 
-const dislikeCard = (req, res) => {
+const likeCard = (req, res, next) => {
+  const { cardId } = req.params;
+  console.log("like 67", req.user);
+  Card.findByIdAndUpdate(
+    cardId,
+    { $addToSet: { likes: req.user } },
+    { new: true }
+  )
+    .orFail(() => {
+      throw new NotFoundError("No card found with that id LikeCard");
+    })
+    .then((cardData) => {
+      res.status(200).send({ data: cardData });
+    })
+    .catch((err) => {
+      if (err.name === "CastError") {
+        throw new BadRequestError("Invalid data passed to Like Card");
+      }
+      else {
+        next(err);
+      }
+    })
+    .catch(next);
+};
+
+const dislikeCard = (req, res, next) => {
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(cardId, { $pull: { likes: req.user } }, { new: true })
     .orFail(() => {
-      const error = new Error("No card found with that id DisLike");
-      error.statusCode = NOT_FOUND;
-      error.name = "DocumentNotFoundError";
-      throw error;
+      throw new NotFoundError("No card found with that id DisLike");
     })
-    .then((cardData) => res.status(OK).send({ data: cardData }))
+    .then((cardData) => res.status(200).send({ data: cardData }))
     .catch((err) => {
-      if (err.statusCode === NOT_FOUND) {
-        res.status(NOT_FOUND).send({ message: err.message });
-      } else if (err.name === "CastError") {
-        res
-          .status(ERROR_CODE)
-          .send({ message: "Invalid data passed to DISLike Card" });
-      } else {
-        res
-          .status(DEFAULT_ERROR)
-          .send({ message: err.message || "An error has occurred" });
+      if (err.name === "CastError") {
+        throw new BadRequestError("Invalid data passed to DISLike Card");
       }
-    });
+      else { //getting stack on postman if you dont do this
+        next(err);
+      }
+    })
+    .catch(next);
 };
 
 module.exports = {

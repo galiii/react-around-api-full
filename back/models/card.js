@@ -14,7 +14,6 @@ const cardSchema = new mongoose.Schema(
       required: true,
       validate: {
         validator(v) {
-          //
           return regexURL.test(v);
         },
         message: "Sorry. Wrong URL",
@@ -36,7 +35,7 @@ const cardSchema = new mongoose.Schema(
   },
   {
     versionKey: false, // set to false then it wont create in mongodb
-  }
+  },
 );
 
 module.exports = mongoose.model("card", cardSchema);
