@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      minlength: 8,
+      //minlength: 8,
       select: false, // add the select field
     },
     name: {
@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema(
         validator(url) {
           return validator.isURL(url);
         },
-        message: "Sorry. Wrong URL", // when the validator returns false, this message will be displayed
+        // message: "Sorry. Wrong URL", // when the validator returns false, this message will be displayed
       },
       default: "https://pictures.s3.yandex.net/resources/avatar_1604080799.jpg",
     },
@@ -61,7 +61,7 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(
     .select("+password")
     .then((user) => {
       if (!user) {
-        throw new UnAuthorizedError("Incorrect email or password 66");
+        throw new UnAuthorizedError("Incorrect email or password line 66");
       }
       return bcrypt.compare(password, user.password).then((matched) => {
         if (!matched) {

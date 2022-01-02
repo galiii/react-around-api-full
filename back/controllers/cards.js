@@ -5,7 +5,6 @@ const ForbiddenError = require("../errors/forbidden-error");
 
 const getCards = (req, res, next) => {
   Card.find({})
-    // .populate("owner")
     .then((cards) => res.status(200).send({ data: cards }))
     .catch(next);
 };
@@ -31,9 +30,7 @@ const deleteCard = (req, res, next) => {
     .then((cardData) => {
       console.log("the card before delete", cardData);
       if (req.user.toString() === cardData.owner.toString()) {
-        Card.deleteOne(cardData).then((cardData) =>
-          res.status(200).send({ data: cardData })
-        );
+        Card.deleteOne(cardData).then((card) => res.status(200).send({ data: card }));
       } else if (req.user.toString() !== cardData.owner.toString()) {
         throw new ForbiddenError("This user Isn’t the Owner of this card");
       }
@@ -43,11 +40,11 @@ const deleteCard = (req, res, next) => {
 
 const likeCard = (req, res, next) => {
   const { cardId } = req.params;
-  console.log("like 67", req.user);
+  // console.log("like 67", req.user);
   Card.findByIdAndUpdate(
     cardId,
     { $addToSet: { likes: req.user } },
-    { new: true }
+    { new: true },
   )
     .orFail(() => {
       throw new NotFoundError("No card found with that id LikeCard");
@@ -58,8 +55,7 @@ const likeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === "CastError") {
         throw new BadRequestError("Invalid data passed to Like Card");
-      }
-      else {
+      } else {
         next(err);
       }
     })
@@ -77,8 +73,7 @@ const dislikeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === "CastError") {
         throw new BadRequestError("Invalid data passed to DISLike Card");
-      }
-      else { //getting stack on postman if you dont do this
+      } else { // getting stack on postman if you dont do this
         next(err);
       }
     })

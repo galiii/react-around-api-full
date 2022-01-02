@@ -1,6 +1,5 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
 const User = require("../models/user"); // this file is the user controller
 const BadRequestError = require("../errors/bad-request-error"); // 400
 const NotFoundError = require("../errors/not-found-error"); // 404
@@ -38,6 +37,7 @@ const getUser = (req, res, next) => {
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
+  console.log("req in login", req.body);
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, "not-very-secret-key", {
@@ -49,25 +49,12 @@ const login = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  const {
-    email,
-    password,
-    name,
-    about,
-    avatar,
-  } = req.body;
+  const { email, password } = req.body;
+  console.log("this Req body in createUser line 52", req.body);
   bcrypt
     .hash(password, 10)
-    .then((hash) =>
-      User.create({
-        email,
-        name,
-        about,
-        avatar,
-        // adding the hash to the database as password field
-        password: hash,
-      }))
-    .then((userData) =>
+    .then((hash) => User.create({ email, password: hash }))
+    .then((userData) => {
       res.status(201).send({
         data: {
           _id: userData._id,
@@ -76,10 +63,14 @@ const createUser = (req, res, next) => {
           about: userData.about,
           avatar: userData.avatar,
         },
-      }))
+      });
+    })
     .catch((err) => {
+      console.log("error",err);
       if (err.name === "ValidationError") {
         throw new BadRequestError("Invalid data passed to the method create User");
+      } else {
+        next(err);
       }
     })
     .catch(next);
@@ -88,7 +79,11 @@ const createUser = (req, res, next) => {
 const updateProfile = (req, res, next) => {
   const { name, about } = req.body;
   const _id = req.user;
-  User.findByIdAndUpdate(_id, { name, about }, { new: true, runValidators: true })
+  User.findByIdAndUpdate(
+    _id,
+    { name, about },
+    { new: true, runValidators: true },
+  )
     .orFail(() => {
       throw new NotFoundError("No User found with that id to update profile");
     })
@@ -104,9 +99,8 @@ const updateProfile = (req, res, next) => {
 const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   const _id = req.user;
-  console.log("the id UPADATE AVATAR",_id)
-  User.findByIdAndUpdate(_id, { avatar },
-    { new: true, runValidators: true,  })
+  // console.log("the id UPADATE AVATAR", _id);
+  User.findByIdAndUpdate(_id, { avatar }, { new: true, runValidators: true })
     .orFail(() => {
       throw new NotFoundError("No User found with that id to update Avatar");
     })
