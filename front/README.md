@@ -69,4 +69,8 @@ export const SUCCESS = "Success! You have now been registered.";
 export const FAILURE = "Oops, something went wrong! Please try again.";
 ```
 
+react-around-api-full
+
+"deploy": "npm run build && scp -r ./build/* practicumuser@gali.students.nomoreparties.site:/home/practicumuser/react-around-api-full" 
+
 

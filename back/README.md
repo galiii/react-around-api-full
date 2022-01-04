@@ -21,6 +21,11 @@ All other directories are optional and may be created by the developer if necess
 `routes` -- `cards.js` and `users.js`
 `utils` -- `utils.js`
 
+gali.students.nomoreparties.sbs
+ip 34.83.223.176
+www.gali.students.nomoreparties.sbs
 
+sub domain for the backend : 
+api.gali.students.nomoreparties.sbs
 
 
