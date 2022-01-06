@@ -1,9 +1,11 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+
+const { NODE_ENV, JWT_SECRET } = process.env;
 const User = require("../models/user");
 const BadRequestError = require("../errors/bad-request-error"); // 400
 const NotFoundError = require("../errors/not-found-error"); // 404
-const ConflictError = require("../errors/conflict-error"); //409
+const ConflictError = require("../errors/conflict-error"); // 409
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -41,9 +43,11 @@ const login = (req, res, next) => {
   console.log("req in login", req.body);
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, "not-very-secret-key", {
-        expiresIn: "7d",
-      });
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === "production" ? JWT_SECRET : "super-strong-secret",
+        { expiresIn: "7d" },
+      );
       res.send({ token });
     })
     .catch(next);
@@ -52,13 +56,13 @@ const login = (req, res, next) => {
 const createUser = (req, res, next) => {
   const { email, password } = req.body;
   console.log("this Req body in createUser line 54", req.body);
-  User.findOne({email})
-  .then((user) => {
-    if(user) {
-      throw new ConflictError("An email was specified that already exists on the server.")
-    }
-  })
-  .catch(next);
+  User.findOne({ email })
+    .then((user) => {
+      if (user) {
+        throw new ConflictError("An email was specified that already exists on the server.");
+      }
+    })
+    .catch(next);
   bcrypt
     .hash(password, 10)
     .then((hash) => User.create({ email, password: hash }))
@@ -74,7 +78,7 @@ const createUser = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log("error",err);
+      console.log("error", err);
       if (err.name === "ValidationError") {
         throw new BadRequestError("Invalid data passed to the method create User");
       } else {

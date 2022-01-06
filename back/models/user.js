@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      //minlength: 8,
+      // minlength: 8,
       select: false, // add the select field
     },
     name: {
@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema(
         validator(url) {
           return validator.isURL(url);
         },
-        // message: "Sorry. Wrong URL", // when the validator returns false, this message will be displayed
+        // message: "Sorry. Wrong URL",
       },
       default: "https://pictures.s3.yandex.net/resources/avatar_1604080799.jpg",
     },
@@ -68,10 +68,9 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(
           throw new UnAuthorizedError("Incorrect email or password 71");
         }
         console.log(user);
-        return user; // now user is available
+        return user;
       });
     });
 };
 
-// create the model and export it
 module.exports = mongoose.model("user", userSchema);

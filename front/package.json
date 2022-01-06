@@ -19,7 +19,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "npm run build && scp -r ./build/* gali.shipod.1955@gali.students.nomoreparties.sbs:/home/gali.shipod.1955/react-around-api-full/front/build" 
   },
   "eslintConfig": {
     "extends": [

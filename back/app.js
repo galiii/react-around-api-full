@@ -4,13 +4,18 @@ const helmet = require("helmet");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const { celebrate, Joi, errors } = require("celebrate");
+
 const { login, createUser } = require("./controllers/users");
 const router = require("./routes/users");
 const cardsRouter = require("./routes/cards");
+
 const auth = require("./middlewares/auth");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 const NotFoundError = require("./errors/not-found-error");
-// require("dotenv").config();
+require("dotenv").config();
+
+// console.log(process.env.NODE_ENV); // production
+// console.log(process.env.JWT_SECRET);
 
 const { PORT = 3000 } = process.env;
 
@@ -30,19 +35,16 @@ app.options("*", cors()); // enable requests for all routes
 
 app.use(requestLogger); // enabling the request logger
 
-
-
 app.post(
   "/signup",
   celebrate({
     body: Joi.object().keys({
       email: Joi.string().required().email(),
       password: Joi.string().required().alphanum(),
-    })
+    }),
   }),
-  createUser
+  createUser,
 );
-
 
 app.post(
   "/signin",
@@ -50,12 +52,10 @@ app.post(
     body: Joi.object().keys({
       email: Joi.string().required().email(),
       password: Joi.string().required(),
-    })
+    }),
   }),
   login,
 );
-
-
 
 app.use("/users", auth, router);
 app.use("/cards", auth, cardsRouter);
