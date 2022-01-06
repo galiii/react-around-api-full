@@ -1,5 +1,4 @@
 import { handleResponse } from "./utils.js";
-//const BASE_URL = "https://register.nomoreparties.co";
 const BASE_URL = "https://api.gali.students.nomoreparties.sbs";
 
 export const register = ({email, password}) => {
