@@ -73,7 +73,7 @@ function App() {
     auth
       .register({ email, password })
       .then((data) => {
-        console.log(data);
+        console.log("in sigup",data);
         setIsSuccessful(true);
         setMessage(SUCCESS);
         history.push("/signin");

@@ -8,6 +8,10 @@ const ConflictError = require("../errors/conflict-error"); // 409
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
+console.log("controllers"); // production
+console.log(NODE_ENV); // production
+console.log(JWT_SECRET);
+
 const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.status(200).send({ data: users }))
