@@ -29,3 +29,12 @@ sub domain for the backend :
 api.gali.students.nomoreparties.sbs
 
 
+gali.shipod.1955
+
+  # Run this locally from the frontend folder
+
+
+npm run build && scp -r ./build/* practicumuser@domainname.students.nomoreparties.site:/home/practicumuser/around-frontend
+
+
+npm run build && scp -r ./build/* gali.shipod.1955@gali-around.students.nomoreparties.sbs:/home/gali.shipod.1955/react-around-api-full/frontend/build
