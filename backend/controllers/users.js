@@ -46,6 +46,7 @@ const getUserById = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
+  console.log("CONTROLLERS CREATE USER",req.body);
   const { email, password } = req.body;
   bcrypt
     .hash(password, 10)
