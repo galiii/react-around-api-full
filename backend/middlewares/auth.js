@@ -3,8 +3,8 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 const { NODE_ENV, JWT_SECRET } = process.env;
-console.log(NODE_ENV); // production
-console.log(JWT_SECRET);
+//console.log(NODE_ENV); // production
+//console.log(JWT_SECRET);
 const UnAuthorizedError = require("../errors/unauthorized-error");
 
 module.exports = (req, res, next) => {
