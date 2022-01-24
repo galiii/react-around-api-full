@@ -61,11 +61,11 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(
     .select("+password")
     .then((user) => {
       if (!user) {
-        throw new UnAuthorizedError("Incorrect email or password line 64");
+        throw new UnAuthorizedError("Incorrect email or password line");
       }
       return bcrypt.compare(password, user.password).then((matched) => {
         if (!matched) {
-          throw new UnAuthorizedError("Incorrect email or password 68");
+          throw new UnAuthorizedError("Incorrect email or password");
         }
         console.log("in user model", user);
         return user;

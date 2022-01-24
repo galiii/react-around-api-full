@@ -67,8 +67,7 @@ app.post(
     body: Joi.object().keys({
       // Requires the string value to be a valid email address.
       email: Joi.string().required().email(),
-      // Requires the string value to only contain a-z, A-Z, and 0-9.
-      password: Joi.string().required().alphanum(),
+      password: Joi.string().required(),
     }),
   }),
   createUser,

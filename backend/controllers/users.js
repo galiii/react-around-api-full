@@ -18,8 +18,6 @@ const getUsers = (req, res, next) => {
 
 const getUser = (req, res, next) => {
   const { userId } = req.params;
-  // console.log("Get User Id", userId);
-  // console.log("Get User Params", req.params);
   User.findById(userId)
     .orFail(() => {
       throw new NotFoundError("No user found with that id");
@@ -44,7 +42,6 @@ const getUserById = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  // console.log("CONTROLLERS CREATE USER", req.body);
   const { email, password } = req.body;
   bcrypt
     .hash(password, 10)
@@ -62,8 +59,9 @@ const createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
+        console.log("error code line 62", err.code);
         throw new BadRequestError("Invalid data passed to the method create User");
-      } else if (err.name === "MongoServerError") {
+      } else if (err.code === 11000) {
         throw new ConflictError("E11000 An email was specified that already exists on the server.");
       }
       next(err);
