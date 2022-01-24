@@ -56,6 +56,7 @@ function App() {
           }
         })
         .catch((err) => {
+          console.log("line 59 App",err);
           if (err === "Bad Request") {
             console.error("400 — Token not provided or provided in the wrong format");
           } else if (err === "Unauthorized") {
@@ -79,6 +80,7 @@ function App() {
         history.push("/signin");
       })
       .catch((err) => {
+        console.log("line 83 App",err);
         if (err === "Bad Request") {
           console.error("400 - one of the fields was filled in incorrectly");
         } else {
@@ -212,15 +214,18 @@ function App() {
   };
 
   useEffect(() => {
+    console.log("token in 215",token);
     tokenCheck();
+    console.log("token in 217",token);
   }, [token, history]);
 
   useEffect(() => {
-    console.log(`line 231 ${token}`);
+    console.log(`line 223 ${token}`);
     Promise.all([api.getUserInfo(token), api.getInitialCards(token)])
       .then(([userData, cardsData]) => {
-        console.log("Cards app",userData.data);
-        setCurrentUser({ ...userData.data });
+        console.log("Users app",userData);
+        setCurrentUser({ ...userData });
+        console.log("Cards app",cardsData);
         setCards([...cardsData.data]);
       })
       .catch(console.error);

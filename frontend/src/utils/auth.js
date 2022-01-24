@@ -2,6 +2,7 @@ import { handleResponse } from "./utils.js";
 const BASE_URL = "https://api.gali-around.students.nomoreparties.sbs";
 //const BASE_URL = "http://localhost:3000"
 
+
 export const register = ({email, password}) => {
   console.log("this email",email);
   console.log("this password",password);
