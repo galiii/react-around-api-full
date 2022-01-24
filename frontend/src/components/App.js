@@ -224,7 +224,7 @@ function App() {
     Promise.all([api.getUserInfo(token), api.getInitialCards(token)])
       .then(([userData, cardsData]) => {
         console.log("Users app",userData);
-        setCurrentUser({ ...userData });
+        setCurrentUser({ ...userData.data });
         console.log("Cards app",cardsData);
         setCards([...cardsData.data]);
       })

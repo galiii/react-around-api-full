@@ -8,9 +8,7 @@ const ConflictError = require("../errors/conflict-error"); // 409
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
-console.log("controllers"); // production
-console.log(NODE_ENV); // production
-console.log(JWT_SECRET);
+console.log("controllers", NODE_ENV, JWT_SECRET); // production
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -20,8 +18,8 @@ const getUsers = (req, res, next) => {
 
 const getUser = (req, res, next) => {
   const { userId } = req.params;
-  console.log("Get User Id", userId);
-  console.log("Get User Params", req.params);
+  // console.log("Get User Id", userId);
+  // console.log("Get User Params", req.params);
   User.findById(userId)
     .orFail(() => {
       throw new NotFoundError("No user found with that id");
@@ -46,7 +44,7 @@ const getUserById = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  console.log("CONTROLLERS CREATE USER",req.body);
+  // console.log("CONTROLLERS CREATE USER", req.body);
   const { email, password } = req.body;
   bcrypt
     .hash(password, 10)
@@ -75,7 +73,7 @@ const createUser = (req, res, next) => {
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
-  console.log("req in login", req.body);
+  // console.log("req in login", req.body);
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign(
@@ -90,7 +88,7 @@ const login = (req, res, next) => {
 
 const updateProfile = (req, res, next) => {
   const { name, about } = req.body;
-  console.log("User id in Update Profile", req.user._id);
+  // console.log("User id in Update Profile", req.user._id);
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },
