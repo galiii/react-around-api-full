@@ -67,7 +67,7 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(
         if (!matched) {
           throw new UnAuthorizedError("Incorrect email or password");
         }
-        console.log("in user model", user);
+        // console.log("in user model", user);
         return user;
       });
     });

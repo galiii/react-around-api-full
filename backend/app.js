@@ -15,7 +15,7 @@ const cardsRouter = require("./routes/cards");
 const NotFoundError = require("./errors/not-found-error");
 
 const { PORT = 3000 } = process.env;
-console.log("in app js");
+// console.log("in app js");
 // console.log(process.env.NODE_ENV); // production
 // console.log(process.env.JWT_SECRET);
 const app = express();
