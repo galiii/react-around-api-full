@@ -117,8 +117,8 @@ class Api {
 }
 
 const api = new Api({
-  //baseUrl: "https://api.gali-around.students.nomoreparties.sbs",
-  baseUrl: "http://localhost:3000",
+  baseUrl: "https://api.around1.students.nomoreparties.sbs",
+  //baseUrl: "http://localhost:3000",
   
 });
 

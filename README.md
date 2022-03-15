@@ -24,9 +24,13 @@ This repository contains the full API of "Around the U.S." project that features
 ![Figma](https://img.shields.io/badge/-Figma-05121A?style=flat&logo=figma)&nbsp;
 ![Express](https://img.shields.io/badge/-Express-05122A?style=flat&logo=express)&nbsp;
 ![GoogleCloud](https://img.shields.io/badge/-GoogleCloud-05122A?style=flat&logo=googlecloud)&nbsp;
+![mongodb](https://img.shields.io/badge/-mongodb-05122A?style=flat&logo=mongodb)&nbsp;
 
 
 ## [Repository link to the ***server side***](https://github.com/galiii/react-around-api-full/tree/main/backend)
 
 ## [Repository link to the ***client side***](https://github.com/galiii/react-around-api-full/tree/main/frontend)
 
+around1.students.nomoreparties.sbs
+www.around1.students.nomoreparties.sbs
+api.around1.students.nomoreparties.sbs
